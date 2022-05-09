@@ -15,20 +15,19 @@ IT HAS BEEN HEAVILY EDITED
 Credit goes to attractivechaos
 
 To build (Using my own paths):
-/Volumes/Workspace/riscvv08/gnu/bin/riscv64-unknown-elf-gcc -DALGO=0 -DSIZE=100 -march=rv64gcv -lm init.S sdot_vec08.S matmul.c -T link.ld -nostartfiles -lm
+/Volumes/Workspace/riscvv08/gnu/bin/riscv64-unknown-elf-gcc -DALGO=4 -DSIZE=8 -march=rv64gv -lm init.S sdot_vec08.S mat_mul.c -T link.ld -nostartfiles -lm
 To test on Spike:
-../../../../TestRig/riscv-implementations/riscv-isa-sim/build/bin/spike -l --isa=RV64gcV ./a.out
+../../../../../TestRig/riscv-implementations/riscv-isa-sim/build/bin/spike -l --isa=RV64gcV ./a.out
 
 To run with kernel proxy for 1.0 (Using my own paths):
-/Volumes/Workspace/riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-apple-darwin/bin/riscv64-unknown-elf-gcc -DALGO=5 -DSIZE=1000 -march=rv64gcv sdot_vec10.S matmul.c
+/Volumes/Workspace/riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-apple-darwin/bin/riscv64-unknown-elf-gcc -DALGO=5 -DSIZE=1000 -march=rv64gcv sdot_vec10.S mat_mul.c
 spike --isa=RV64gcV pk a.out
 *****************/
 
-/***********************************************
- * WYHASH-based Pseudo-random number generator *
- ***********************************************/
-
-
+/************************************************************************************
+ * WYHASH-based Pseudo-random number generator									    *
+ Based on: https://lemire.me/blog/2019/07/03/a-fast-16-bit-random-number-generator/ *
+ ************************************************************************************/
 uint32_t hash16(uint32_t input, uint32_t key) {
   uint32_t hash = input * key;
   return ((hash >> 16) ^ hash) & 0xFFFF;
@@ -128,7 +127,7 @@ void printBits(size_t const size, void const * const ptr)
  * Matrix multiplication *
  *************************/
 
-void **mat_mul0(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][SIZE])
+void mat_mul0(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][SIZE])
 {
 	int i, j, k;
 	for (i = 0; i < SIZE; ++i) {
@@ -141,7 +140,7 @@ void **mat_mul0(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][
 	}
 }
 
-void **mat_mul1(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][SIZE])
+void mat_mul1(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][SIZE])
 {
 	int i, j, k = SIZE;
 	mat_transpose(b);
@@ -158,7 +157,7 @@ void **mat_mul1(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][
 	mat_transpose(b);
 }
 
-void **mat_mul2(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][SIZE])
+void mat_mul2(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][SIZE])
 {
 	int i, j = SIZE;
 	mat_transpose(b);
@@ -168,7 +167,7 @@ void **mat_mul2(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][
 	mat_transpose(b);
 }
 
-void **mat_mul3(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][SIZE])
+void mat_mul3(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][SIZE])
 {
 	mat_transpose(b);
 	for (int i = 0; i < SIZE; i++)
@@ -177,12 +176,11 @@ void **mat_mul3(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][
 	mat_transpose(b);
 }
 
-void **mat_mul_vec(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][SIZE])
+void mat_mul_vec(int16_t a[SIZE][SIZE], int16_t b[SIZE][SIZE], int16_t out[SIZE][SIZE])
 {
 	mat_transpose(b);
 	for (int i = 0; i < SIZE; i++)
 		for (int j = 0; j < SIZE; j++){
-			//print_arrs(SIZE,a[i],b[j]);
 			out[i][j] = sdot_vec(SIZE, a[i], b[j]);
 		}
 	//Restore b
@@ -268,15 +266,17 @@ int main(int argc, char *argv[])
 			}
 		}
 		if (matches==1){
-			success();
 			#ifdef DEBUG
 			printf("Success!");
+			#else
+			success();
 			#endif
 		}
 		else {
-			failure();
 			#ifdef DEBUG
 			printf("Failure!");
+			#else
+			failure();
 			#endif
 		}
 	} else {

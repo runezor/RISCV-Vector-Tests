@@ -1,0 +1,16 @@
+warning: tohost and fromhost symbols not in ELF; can't communicate with target
+<stdin>:20.39-24.9: Warning (interrupt_provider): /cpus/cpu@0/interrupt-controller: Missing #address-cells in interrupt provider
+core   0: 0x0000000000001000 (0x00000297) auipc   t0, 0x0
+core   0: 0x0000000000001004 (0x02028593) addi    a1, t0, 32
+core   0: 0x0000000000001008 (0xf1402573) csrr    a0, mhartid
+core   0: 0x000000000000100c (0x0182b283) ld      t0, 24(t0)
+core   0: 0x0000000000001010 (0x00028067) jr      t0
+core   0: 0x0000000080000000 (0x00002197) auipc   gp, 0x2
+core   0: 0x0000000080000004 (0x80018193) addi    gp, gp, -2048
+core   0: 0x0000000080000008 (0x00f00117) auipc   sp, 0xf00
+core   0: 0x000000008000000c (0xff810113) addi    sp, sp, -8
+core   0: 0x0000000080000010 (0x291000ef) jal     pc + 0xa90
+core   0: 0x0000000080000aa0 (0x00004501) c.li    a0, 0
+core   0: 0x0000000080000aa2 (0x00008082) ret
+core   0: 0x0000000080000014 (0x0000006f) j       pc + 0x0
+: 

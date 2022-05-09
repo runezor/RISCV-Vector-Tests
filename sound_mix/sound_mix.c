@@ -7,12 +7,12 @@
 
 /*****************
 To build (Using my own paths):
-/Volumes/Workspace/riscvv08/gnu/bin/riscv64-unknown-elf-gcc -DSEQ -DSIZE=10000 -march=rv64gcv -lm init.S rvv_helpers_v08.S sound_mix.c -T link.ld -nostartfiles -lm
+/Volumes/Workspace/riscvv08/gnu/bin/riscv64-unknown-elf-gcc -DSIZE=10000 -O3 -march=rv64gcv -lm init.S rvv_helpers_v08.S sound_mix.c -T link.ld -nostartfiles -lm
 To test on Spike:
 ../../../../../TestRig/riscv-implementations/riscv-isa-sim/build/bin/spike -l --isa=RV64gcV ./a.out
 
 To run with kernel proxy for 1.0 (Using my own paths):
-/Volumes/Workspace/riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-apple-darwin/bin/riscv64-unknown-elf-gcc -DCOMPARE -march=rv64gcv rvv_helpers_v10.S sound_mix.c
+/Volumes/Workspace/riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-apple-darwin/bin/riscv64-unknown-elf-gcc -DCOMPARE -DSIZE=10000 -march=rv64gcv rvv_helpers_v10_128.S sound_mix.c
 spike --isa=RV64gcV pk a.out
 *****************/
 
@@ -30,7 +30,7 @@ uint16_t wyhash_16(uint16_t* wyhash16_x) {
   return hash16(*wyhash16_x, 0x2ab);
 }
 
-void sat_add_seq(int n, uint16_t *x, uint16_t *y, uint16_t* z){
+void sat_add_seq(int n, volatile uint16_t *x, volatile  uint16_t *y, volatile  uint16_t* z){
 	for(int i=0; i<n; i++){
 		int temp = x[i]+y[i];
 		if (temp>0xffff){
@@ -46,10 +46,10 @@ int main(int argc, char *argv[])
 	uint16_t* wyhash16_x = &h; 
 	int n = SIZE;
 
-	uint16_t a[n];
-	uint16_t b[n];
-	uint16_t c[n];
-	uint16_t d[n];
+	volatile uint16_t a[n];
+	volatile uint16_t b[n];
+	volatile uint16_t c[n];
+	volatile uint16_t d[n];
 
 	for(uint16_t i=0; i<n; i++){
 		a[i] = wyhash_16(wyhash16_x);
@@ -94,6 +94,8 @@ int main(int argc, char *argv[])
 			#endif
 		}
 	#endif
+	
+	//Try to optimise this Clang
 	
 	return 0;
 }

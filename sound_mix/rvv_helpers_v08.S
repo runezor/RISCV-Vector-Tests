@@ -55,18 +55,8 @@ sat_add_vectorised:                     # @sat_add_vectorised
 .LBB0_8:
         ret
 success:
-        unimp
-        unimp
-        unimp
-        unimp
-        unimp
+        addi a1, a1, 0
         ret
 failure:
-        unimp
-        unimp
-        unimp
-        unimp
-        unimp
-        unimp
-        unimp
+        addi a2, a2, 0
         ret
